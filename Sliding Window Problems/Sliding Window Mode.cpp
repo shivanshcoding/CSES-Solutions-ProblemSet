@@ -44,7 +44,16 @@ void solve() {
     while(r<n){
         mpp[a[r]]++;
         if(r-l+1 == k){
-            cout<<mpp.size()<<" ";
+            ll ans = INT_MAX, maxi = 0;
+            for(auto& p: mpp){
+                if(p.second > maxi){
+                    ans =  p.first;
+                    maxi = p.second;
+                }else if(p.second==maxi){
+                    ans = min(ans,p.first);
+                }
+            }
+            cout<<ans<<" ";
             mpp[a[l]]--;
             if(mpp[a[l]]==0){
                 mpp.erase(a[l]);
