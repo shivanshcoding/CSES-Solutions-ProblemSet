@@ -45,14 +45,15 @@ void solve() {
     }
     priority_queue<pll,vector<pll>,greater<pll>> pq;
     pq.push({0,0});
-    ll cnt = 0;
-    //dist, node
-    while(!pq.empty() && cnt < k){
+    vector<ll> cnt(n,0);
+    
+    while(!pq.empty()){
         auto [d,node] = pq.top();
         pq.pop();
+        if(cnt[node] == k) continue;
+        cnt[node]++;
         if(node==n-1){
             cout<<d<<" ";
-            cnt++;
         }
         for(auto p: adj[node]){
             pq.push({p.s+d,p.f});
