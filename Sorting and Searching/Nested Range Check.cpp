@@ -37,21 +37,13 @@ const ll INF = 1e18, MOD = 1e9+7;
 
 void solve() {
     cin>>n;
-    vector<ll> a(n);
-    read(a);
-    ll count= 0;
-    unordered_map<ll,ll,custom_hash> mpp;
-    int l = 0, r = 0;
-    while(r<n){
-        mpp[a[r]]++;
-        while(mpp[a[r]]>1){
-            mpp[a[l]]--;
-            l++;
-        }
-        count+=(r-l+1);
-        r++;
+    vector<pair<ll,ll>> ranges;
+    for(int i=0;i<n;i++){
+        cin>>x>>y;
+        ranges.pb({x,y});
     }
-    cout<<count;
+
+    
 }
 
 int main() {
