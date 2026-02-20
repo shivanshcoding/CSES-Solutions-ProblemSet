@@ -36,27 +36,13 @@ ll t=1,n,m,p,q,r,k,a,b,c,x,y,z;
 const ll INF = 1e18, MOD = 1e9+7;
 
 void solve() {
-    cin>>n>>k;
-    vector<ll> a(n);
-    read(a);
-    ll l = 0, r = 0;
-    unordered_map<ll,ll,custom_hash> mpp;
-    int count = 0;
-    while(r<n){
-        if(mpp.find(a[r])==mpp.end()) count++;
-        mpp[a[r]]++;
-        if(r-l+1 == k){
-            cout<<count<<" ";
-            mpp[a[l]]--;
-            if(mpp[a[l]]==0){
-                mpp.erase(a[l]);
-                count--;
-            }
-            l++;
-        }
-        r++;
+    cin>>n>>m;
+    vector<vector<ll>> adj(n);
+    for(int i=0;i<m;i++){
+        cin>>a>>b;
+        a--;b--;
+        adj[a].push_back(b);
     }
-
 }
 
 int main() {
