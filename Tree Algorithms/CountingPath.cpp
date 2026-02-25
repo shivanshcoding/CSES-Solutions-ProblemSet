@@ -32,16 +32,103 @@ vector<ll> ddx = {1,1,0,-1,-1,-1,0,1}, ddy = {0,1,1,1,0,-1,-1,-1}; // 8 directio
 template<typename T> void read(vector<T> &v) { for (auto &x : v) cin >> x; }
 template<typename T> void printv(const vector<T>& v) { for (auto &x : v) cout << x << ' '; }
 template<typename T> void print2d(const vector<vector<T>>& v) { for (auto &row : v) { for (auto &x : row) cout << x << ' '; cout << '\n'; } }
-ll t=1,n,m,p,q,r,k,a,b,c,x,y,z;
+// ll t=1,n,m,p,q,r,k,a,b,c,x,y,z;
 const ll INF = 1e18, MOD = 1e9+7;
 
-void solve() {
-    
+const int MAXN = 200005;
+const int LOG = 20;
+
+vector<int> adj[MAXN];
+int up[MAXN][LOG];
+int depth[MAXN];
+long long cnt[MAXN];
+int parent[MAXN];
+int n, m;
+
+/* ---------- DFS to build LCA ---------- */
+void dfs(int node, int par, int d){
+    parent[node] = par;
+    depth[node] = d;
+    up[node][0] = par;
+
+    for(int i = 1; i < LOG; i++){
+        if(up[node][i-1] != 0)
+            up[node][i] = up[ up[node][i-1] ][i-1];
+    }
+
+    for(int child : adj[node]){
+        if(child == par) continue;
+        dfs(child, node, d+1);
+    }
 }
 
-int main() {
-    fastio();
-    // cin >> t;
-    while (t--) solve();
-    return 0;
+/* ---------- LCA ---------- */
+int lca(int a, int b){
+
+    if(depth[a] < depth[b]) swap(a, b);
+
+    int diff = depth[a] - depth[b];
+
+    // lift a up
+    for(int i = 0; i < LOG; i++)
+        if(diff & (1<<i))
+            a = up[a][i];
+
+    if(a == b) return a;
+
+    for(int i = LOG-1; i >= 0; i--){
+        if(up[a][i] != up[b][i]){
+            a = up[a][i];
+            b = up[b][i];
+        }
+    }
+
+    return up[a][0];
+}
+
+/* ---------- Post-order accumulation ---------- */
+void accumulate(int node, int par){
+    for(int child : adj[node]){
+        if(child == par) continue;
+        accumulate(child, node);
+        cnt[node] += cnt[child];
+    }
+}
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    cin >> n >> m;
+
+    for(int i=0;i<n-1;i++){
+        int a,b;
+        cin>>a>>b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+
+    // root tree at 1
+    dfs(1,0,0);
+
+    /* ----- process queries ----- */
+    while(m--){
+        int a,b;
+        cin>>a>>b;
+
+        int L = lca(a,b);
+
+        cnt[a]++;
+        cnt[b]++;
+        cnt[L]--;
+        if(parent[L] != 0)
+            cnt[parent[L]]--;
+    }
+
+    /* ----- propagate ----- */
+    accumulate(1,0);
+
+    /* ----- output ----- */
+    for(int i=1;i<=n;i++)
+        cout<<cnt[i]<<" ";
 }
