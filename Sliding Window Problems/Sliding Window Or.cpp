@@ -1,48 +1,53 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define fastio() ios::sync_with_stdio(false); cin.tie(nullptr)
-using ll = long long;
 
-ll n, k, a, b, c, x;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-void solve() {
+    long long n, k;
     cin >> n >> k;
+
+    long long x, a, b, c;
     cin >> x >> a >> b >> c;
 
-    vector<int> last(32, -1); // last index where each bit was seen
-    ll ans = 0;
+    const int B = 31;
+    vector<int> cnt(B, 0);
 
-    for (int i = 0; i < n; i++) {
-        // update last positions of set bits in x
-        for (int bit = 0; bit < 32; bit++) {
-            if (x & (1 << bit)) {
-                last[bit] = i;
+    long long ans = 0;
+    long long cur_or = 0;
+
+    queue<long long> q;
+
+    long long cur = x;
+
+    for (long long i = 1; i <= n; i++) {
+
+        if (i > 1) cur = (a * cur + b) % c;
+
+        q.push(cur);
+
+        for (int bit = 0; bit < B; bit++) {
+            if (cur & (1LL << bit)) cnt[bit]++;
+        }
+
+        if (q.size() > k) {
+            long long rem = q.front();
+            q.pop();
+
+            for (int bit = 0; bit < B; bit++) {
+                if (rem & (1LL << bit)) cnt[bit]--;
             }
         }
 
-        // once we have a full window
-        if (i >= k - 1) {
-            int l = i - k + 1;
-            ll window_or = 0;
-            for (int bit = 0; bit < 32; bit++) {
-                if (last[bit] >= l) {
-                    window_or |= (1LL << bit);
-                }
+        if (q.size() == k) {
+            cur_or = 0;
+            for (int bit = 0; bit < B; bit++) {
+                if (cnt[bit] > 0) cur_or |= (1LL << bit);
             }
-            ans ^= window_or;
-        }
-
-        // generate next number
-        if (i < n - 1) {
-            x = (a * x + b) % c;
+            ans ^= cur_or;
         }
     }
 
     cout << ans << "\n";
-}
-
-int main() {
-    fastio();
-    solve();
-    return 0;
 }
