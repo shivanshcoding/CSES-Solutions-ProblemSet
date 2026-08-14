@@ -9,24 +9,25 @@ int main() {
     long long x;
     cin >> n >> x;
 
-    unordered_map<long long, long long> freq;
+    map<long long, long long> freq;
 
-    // Empty prefix
-    freq[0] = 1;
-
-    long long sum = 0;
+    long long prefix = 0;
     long long ans = 0;
+
+    freq[0] = 1;
 
     for (int i = 0; i < n; i++) {
         long long a;
         cin >> a;
 
-        sum += a;
+        prefix += a;
 
-        // Number of previous prefix sums equal to sum - x
-        ans += freq[sum - x];
+        auto it = freq.find(prefix - x);
+        if (it != freq.end()) {
+            ans += it->second;
+        }
 
-        freq[sum]++;
+        freq[prefix]++;
     }
 
     cout << ans << '\n';
